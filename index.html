@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>UCASS Intercomparison</title>
+  <style>
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0; background: #f0f2f5; color: #1f2328; line-height: 1.45; }
+header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+  color: #fff; padding: 1.1rem 1.5rem 1rem; }
+header h1 { margin: 0 0 0.35rem; font-size: 1.4rem; font-weight: 600; }
+header .subtitle { margin: 0; font-size: 0.82rem; opacity: 0.92; }
+nav.campaign-nav { display: flex; flex-wrap: wrap; gap: 0.45rem; padding: 0.65rem 1rem;
+  background: #e8eef4; border-bottom: 2px solid #c8d4e0; position: sticky; top: 0; z-index: 110; }
+nav.campaign-nav .label { align-self: center; font-size: 0.8rem; font-weight: 600;
+  color: #424a53; margin-right: 0.5rem; }
+.campaign-btn { border: 1px solid #b8c4d0; background: #fff; padding: 0.5rem 1rem;
+  border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 500; }
+.campaign-btn:hover { background: #f0f6fc; }
+.campaign-btn.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
+.campaign-panel { display: none; }
+.campaign-panel.active { display: block; }
+nav.tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.7rem 1rem;
+  background: #fff; border-bottom: 1px solid #d8dee4; }
+.tab-btn { border: 1px solid #d0d7de; background: #f6f8fa; padding: 0.45rem 0.9rem;
+  border-radius: 6px; cursor: pointer; font-size: 0.88rem; }
+.tab-btn.active { background: #0969da; color: #fff; border-color: #0969da; }
+main { padding: 1.25rem 1.5rem 3rem; max-width: 1280px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.tab-panel h3 { color: #1e3a5f; }
+.plot-card { background: #fff; border: 2px solid #d8dee4; border-radius: 8px;
+  padding: 0.75rem; margin-bottom: 1rem; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
+.plot-card:hover { border-color: #b8c4d0; }
+.plot-card.compare-queued { border-color: #cf222e; box-shadow: 0 0 0 1px #cf222e; }
+.plot-card-header { display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; margin-bottom: 0.5rem; }
+.plot-card h4 { margin: 0; font-size: 0.85rem; color: #57606a; }
+.compare-plot-btn { border: 1px solid #cf222e; background: #fff; color: #cf222e;
+  padding: 0.25rem 0.65rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;
+  font-weight: 600; flex-shrink: 0; }
+.compare-plot-btn:hover { background: #ffebe9; }
+.compare-plot-btn.queued { background: #cf222e; color: #fff; border-color: #cf222e; }
+.campaign-btn.comparison-tab { border-color: #cf222e; color: #cf222e; margin-left: 0.25rem; }
+.campaign-btn.comparison-tab:hover { background: #ffebe9; }
+.campaign-btn.comparison-tab.active { background: #cf222e; color: #fff; border-color: #cf222e; }
+.campaign-btn.comparison-tab.has-items { font-weight: 600; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 960px) { .grid-2 { grid-template-columns: 1fr; } }
+.plot-lightbox { display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15, 23, 42, 0.94); padding: 1.5rem;
+  flex-direction: column; align-items: center; justify-content: center; }
+.plot-lightbox.active { display: flex; }
+.plot-lightbox img { max-width: min(96vw, 1600px); max-height: 82vh; width: auto; height: auto;
+  object-fit: contain; background: #fff; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.plot-lightbox .lightbox-caption { color: #e6edf3; font-size: 0.9rem; margin: 0.75rem 0 0;
+  text-align: center; max-width: 90vw; }
+.lightbox-close { position: fixed; top: 1rem; right: 1rem; border: none; background: rgba(255,255,255,0.15);
+  color: #fff; font-size: 2rem; line-height: 1; width: 2.5rem; height: 2.5rem; border-radius: 8px;
+  cursor: pointer; }
+.lightbox-close:hover { background: rgba(255,255,255,0.28); }
+body.lightbox-open { overflow: hidden; }
+.compare-panel { display: none; }
+.compare-panel.active { display: block; }
+.compare-controls { background: #fff; border: 1px solid #d8dee4; border-radius: 8px;
+  padding: 1rem 1.25rem; margin: 1.25rem 1.5rem 0; max-width: 1280px; }
+.compare-controls h2 { margin: 0 0 0.75rem; font-size: 1.05rem; color: #1e3a5f; }
+.compare-row { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: flex-end; }
+.compare-field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 220px; }
+.compare-field label { font-size: 0.8rem; font-weight: 600; color: #424a53; }
+.compare-field select { padding: 0.45rem 0.6rem; border: 1px solid #d0d7de; border-radius: 6px;
+  font-size: 0.9rem; background: #fff; }
+.date-checks { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; }
+.date-check { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.88rem; }
+.compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem; padding: 1.25rem 1.5rem 3rem; max-width: 1280px; margin: 0 auto; }
+.compare-card { background: #fff; border: 1px solid #d8dee4; border-radius: 8px; padding: 0.75rem; }
+.compare-card h4 { margin: 0 0 0.5rem; font-size: 0.85rem; color: #1e3a5f; }
+.compare-card .date-badge { display: inline-block; background: #e8eef4; color: #1e3a5f;
+  font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.45rem; border-radius: 4px;
+  margin-bottom: 0.45rem; }
+.compare-empty { color: #57606a; font-size: 0.9rem; padding: 1.25rem 1.5rem 3rem; max-width: 1280px;
+  margin: 0 auto; }
+.compare-remove-btn { border: none; background: #ffebe9; color: #cf222e; padding: 0.2rem 0.5rem;
+  border-radius: 4px; cursor: pointer; font-size: 0.72rem; font-weight: 600; margin-bottom: 0.45rem; }
+.compare-remove-btn:hover { background: #cf222e; color: #fff; }
+.compare-controls-row { display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; flex-wrap: wrap; }
+.compare-clear-btn { border: 1px solid #cf222e; background: #fff; color: #cf222e;
+  padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 600; }
+.compare-clear-btn:hover { background: #cf222e; color: #fff; }
+.figure { width: 100%; max-width: 100%; height: auto; display: block; cursor: zoom-in; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>UCASS Intercomparison</h1>
+  </header>
+  <nav class="campaign-nav">
+    <span class="label">Date:</span>
+    <button type="button" class="campaign-btn" data-slug="23-6-26">23.6.26</button>
+    <button type="button" class="campaign-btn" data-slug="2-7-26">2.7.26</button>
+    <button type="button" class="campaign-btn" data-slug="9-7-26">9.7.26</button>
+    <button type="button" class="campaign-btn" data-slug="10-7-26">10.7.26</button>
+    <button type="button" id="comparison-tab" class="campaign-btn comparison-tab" data-slug="compare">Comparison</button>
+  </nav>
+  <div id="campaign-23-6-26" class="campaign-panel">
+    <nav class="tabs">
+      <button type="button" class="tab-btn" data-target="overview-23-6-26">Overview</button>
+      <button type="button" class="tab-btn" data-target="combined-23-6-26">Combined aerosol</button>
+      <button type="button" class="tab-btn" data-target="scatter-23-6-26">Scatter plots</button>
+      <button type="button" class="tab-btn" data-target="wind-23-6-26">Meteorology</button>
+    </nav>
+    <main>
+      <section id="overview-23-6-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="23.6.26">
+          <div class="plot-card-header">
+            <h4>Combined PSD — FIDAS, UCASS 1/2/6, TSI</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="23.6.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="Combined PSD — FIDAS, UCASS 1/2/6, TSI" class="figure" loading="lazy"/>
+        </div>
+      </section>
+      <section id="combined-23-6-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="23.6.26">
+          <div class="plot-card-header">
+            <h4>FIDAS vs UCASS vs TSI (dN/dlnDp)</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="23.6.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="FIDAS vs UCASS vs TSI (dN/dlnDp)" class="figure" loading="lazy"/>
+        </div>
+        <h3>By wind speed</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 0 2</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" alt="Wind Speed 0 2" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 10 12</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" alt="Wind Speed 10 12" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 2 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" alt="Wind Speed 2 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 4 6</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" alt="Wind Speed 4 6" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 6 8</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" alt="Wind Speed 6 8" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 8 10</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" alt="Wind Speed 8 10" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Gt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" alt="Wind Speed Gt 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Lt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" alt="Wind Speed Lt 4" class="figure" loading="lazy"/>
+          </div>
+        </div>
+        <h3>By wind direction</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction E</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_E.png" alt="Wind Direction E" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction N</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_N.png" alt="Wind Direction N" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NE.png" alt="Wind Direction NE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NW.png" alt="Wind Direction NW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction S</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_S.png" alt="Wind Direction S" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SE.png" alt="Wind Direction SE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SW.png" alt="Wind Direction SW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction W</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_W.png" alt="Wind Direction W" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+      <section id="scatter-23-6-26" class="tab-panel">
+        <p class="compare-empty" style="padding:0">Scatter plots not yet available for this date.</p>
+      </section>
+      <section id="wind-23-6-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="map.png" data-campaign-date="23.6.26">
+          <div class="plot-card-header">
+            <h4>Map</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="map.png">Compare</button>
+          </div>
+          <img src="23.6.26/figures/map.png" alt="Map" class="figure" loading="lazy"/>
+        </div>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="wind/air_temperature_timeseries.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Air Temperature Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/air_temperature_timeseries.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/air_temperature_timeseries.png" alt="Air Temperature Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/atmospheric_pressure_timeseries.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Atmospheric Pressure Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/atmospheric_pressure_timeseries.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/atmospheric_pressure_timeseries.png" alt="Atmospheric Pressure Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/correlation_heatmap.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Correlation Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/correlation_heatmap.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/correlation_heatmap.png" alt="Correlation Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Daily Hourly Wind Speed Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/daily_hourly_wind_speed_heatmap.png" alt="Daily Hourly Wind Speed Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_direction.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Direction</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_direction.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/diurnal_wind_direction.png" alt="Diurnal Wind Direction" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_speed.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Speed</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_speed.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/diurnal_wind_speed.png" alt="Diurnal Wind Speed" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/relative_humidity_timeseries.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Relative Humidity Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/relative_humidity_timeseries.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/relative_humidity_timeseries.png" alt="Relative Humidity Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/u_component_timeseries.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>u Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/u_component_timeseries.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/u_component_timeseries.png" alt="u Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/v_component_timeseries.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>v Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/v_component_timeseries.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/v_component_timeseries.png" alt="v Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_histogram.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_histogram.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/wind_direction_histogram.png" alt="Wind Direction Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_polar.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Polar</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_polar.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/wind_direction_polar.png" alt="Wind Direction Polar" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_timeseries.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_timeseries.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/wind_direction_timeseries.png" alt="Wind Direction Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_rose.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Rose</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_rose.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/wind_rose.png" alt="Wind Rose" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_histogram.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_histogram.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/wind_speed_histogram.png" alt="Wind Speed Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_timeseries.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_timeseries.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/wind_speed_timeseries.png" alt="Wind Speed Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_weibull_fit.png" data-campaign-date="23.6.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Weibull Fit</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_weibull_fit.png">Compare</button>
+            </div>
+            <img src="23.6.26/figures/wind/wind_speed_weibull_fit.png" alt="Wind Speed Weibull Fit" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="campaign-2-7-26" class="campaign-panel">
+    <nav class="tabs">
+      <button type="button" class="tab-btn" data-target="overview-2-7-26">Overview</button>
+      <button type="button" class="tab-btn" data-target="combined-2-7-26">Combined aerosol</button>
+      <button type="button" class="tab-btn" data-target="scatter-2-7-26">Scatter plots</button>
+      <button type="button" class="tab-btn" data-target="wind-2-7-26">Meteorology</button>
+    </nav>
+    <main>
+      <section id="overview-2-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="2.7.26">
+          <div class="plot-card-header">
+            <h4>Combined PSD — FIDAS, UCASS 1/2/6, TSI</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="2.7.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="Combined PSD — FIDAS, UCASS 1/2/6, TSI" class="figure" loading="lazy"/>
+        </div>
+      </section>
+      <section id="combined-2-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="2.7.26">
+          <div class="plot-card-header">
+            <h4>FIDAS vs UCASS vs TSI (dN/dlnDp)</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="2.7.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="FIDAS vs UCASS vs TSI (dN/dlnDp)" class="figure" loading="lazy"/>
+        </div>
+        <h3>By wind speed</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 0 2</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" alt="Wind Speed 0 2" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 10 12</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" alt="Wind Speed 10 12" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 2 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" alt="Wind Speed 2 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 4 6</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" alt="Wind Speed 4 6" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 6 8</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" alt="Wind Speed 6 8" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 8 10</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" alt="Wind Speed 8 10" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Gt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" alt="Wind Speed Gt 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Lt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" alt="Wind Speed Lt 4" class="figure" loading="lazy"/>
+          </div>
+        </div>
+        <h3>By wind direction</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction E</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_E.png" alt="Wind Direction E" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction N</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_N.png" alt="Wind Direction N" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NE.png" alt="Wind Direction NE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NW.png" alt="Wind Direction NW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction S</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_S.png" alt="Wind Direction S" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SE.png" alt="Wind Direction SE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SW.png" alt="Wind Direction SW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction W</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_W.png" alt="Wind Direction W" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+      <section id="scatter-2-7-26" class="tab-panel">
+        <p class="compare-empty" style="padding:0">Scatter plots not yet available for this date.</p>
+      </section>
+      <section id="wind-2-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="map.png" data-campaign-date="2.7.26">
+          <div class="plot-card-header">
+            <h4>Map</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="map.png">Compare</button>
+          </div>
+          <img src="2.7.26/figures/map.png" alt="Map" class="figure" loading="lazy"/>
+        </div>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="wind/air_temperature_timeseries.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Air Temperature Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/air_temperature_timeseries.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/air_temperature_timeseries.png" alt="Air Temperature Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/atmospheric_pressure_timeseries.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Atmospheric Pressure Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/atmospheric_pressure_timeseries.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/atmospheric_pressure_timeseries.png" alt="Atmospheric Pressure Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/correlation_heatmap.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Correlation Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/correlation_heatmap.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/correlation_heatmap.png" alt="Correlation Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Daily Hourly Wind Speed Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/daily_hourly_wind_speed_heatmap.png" alt="Daily Hourly Wind Speed Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_direction.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Direction</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_direction.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/diurnal_wind_direction.png" alt="Diurnal Wind Direction" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_speed.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Speed</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_speed.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/diurnal_wind_speed.png" alt="Diurnal Wind Speed" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/relative_humidity_timeseries.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Relative Humidity Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/relative_humidity_timeseries.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/relative_humidity_timeseries.png" alt="Relative Humidity Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/u_component_timeseries.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>u Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/u_component_timeseries.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/u_component_timeseries.png" alt="u Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/v_component_timeseries.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>v Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/v_component_timeseries.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/v_component_timeseries.png" alt="v Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_histogram.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_histogram.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/wind_direction_histogram.png" alt="Wind Direction Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_polar.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Polar</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_polar.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/wind_direction_polar.png" alt="Wind Direction Polar" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_timeseries.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_timeseries.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/wind_direction_timeseries.png" alt="Wind Direction Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_rose.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Rose</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_rose.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/wind_rose.png" alt="Wind Rose" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_histogram.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_histogram.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/wind_speed_histogram.png" alt="Wind Speed Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_timeseries.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_timeseries.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/wind_speed_timeseries.png" alt="Wind Speed Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_weibull_fit.png" data-campaign-date="2.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Weibull Fit</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_weibull_fit.png">Compare</button>
+            </div>
+            <img src="2.7.26/figures/wind/wind_speed_weibull_fit.png" alt="Wind Speed Weibull Fit" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="campaign-9-7-26" class="campaign-panel">
+    <nav class="tabs">
+      <button type="button" class="tab-btn" data-target="overview-9-7-26">Overview</button>
+      <button type="button" class="tab-btn" data-target="combined-9-7-26">Combined aerosol</button>
+      <button type="button" class="tab-btn" data-target="scatter-9-7-26">Scatter plots</button>
+      <button type="button" class="tab-btn" data-target="wind-9-7-26">Meteorology</button>
+    </nav>
+    <main>
+      <section id="overview-9-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="9.7.26">
+          <div class="plot-card-header">
+            <h4>Combined PSD — FIDAS, UCASS 1/2/6, TSI</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="9.7.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="Combined PSD — FIDAS, UCASS 1/2/6, TSI" class="figure" loading="lazy"/>
+        </div>
+      </section>
+      <section id="combined-9-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="9.7.26">
+          <div class="plot-card-header">
+            <h4>FIDAS vs UCASS vs TSI (dN/dlnDp)</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="9.7.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="FIDAS vs UCASS vs TSI (dN/dlnDp)" class="figure" loading="lazy"/>
+        </div>
+        <h3>By wind speed</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 0 2</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" alt="Wind Speed 0 2" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 10 12</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" alt="Wind Speed 10 12" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 2 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" alt="Wind Speed 2 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 4 6</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" alt="Wind Speed 4 6" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 6 8</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" alt="Wind Speed 6 8" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 8 10</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" alt="Wind Speed 8 10" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Gt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" alt="Wind Speed Gt 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Lt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" alt="Wind Speed Lt 4" class="figure" loading="lazy"/>
+          </div>
+        </div>
+        <h3>By wind direction</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction E</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_E.png" alt="Wind Direction E" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction N</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_N.png" alt="Wind Direction N" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NE.png" alt="Wind Direction NE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NW.png" alt="Wind Direction NW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction S</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_S.png" alt="Wind Direction S" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SE.png" alt="Wind Direction SE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SW.png" alt="Wind Direction SW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction W</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_W.png" alt="Wind Direction W" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+      <section id="scatter-9-7-26" class="tab-panel">
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>UCASS multi-bin intercomparison scatter (10 min)</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png" alt="UCASS multi-bin intercomparison scatter (10 min)" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>UCASS multi-bin intercomparison scatter (5 min)</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png" alt="UCASS multi-bin intercomparison scatter (5 min)" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>UCASS multi-bin intercomparison scatter (5 min, wind &lt; 2 m/s)</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png" alt="UCASS multi-bin intercomparison scatter (5 min, wind &lt; 2 m/s)" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+      <section id="wind-9-7-26" class="tab-panel">
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="wind/air_temperature_timeseries.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Air Temperature Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/air_temperature_timeseries.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/air_temperature_timeseries.png" alt="Air Temperature Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/atmospheric_pressure_timeseries.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Atmospheric Pressure Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/atmospheric_pressure_timeseries.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/atmospheric_pressure_timeseries.png" alt="Atmospheric Pressure Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/correlation_heatmap.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Correlation Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/correlation_heatmap.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/correlation_heatmap.png" alt="Correlation Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Daily Hourly Wind Speed Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/daily_hourly_wind_speed_heatmap.png" alt="Daily Hourly Wind Speed Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_direction.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Direction</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_direction.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/diurnal_wind_direction.png" alt="Diurnal Wind Direction" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_speed.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Speed</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_speed.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/diurnal_wind_speed.png" alt="Diurnal Wind Speed" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/monthly_wind_speed.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Monthly Wind Speed</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/monthly_wind_speed.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/monthly_wind_speed.png" alt="Monthly Wind Speed" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/relative_humidity_timeseries.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Relative Humidity Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/relative_humidity_timeseries.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/relative_humidity_timeseries.png" alt="Relative Humidity Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/u_component_timeseries.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>u Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/u_component_timeseries.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/u_component_timeseries.png" alt="u Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/v_component_timeseries.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>v Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/v_component_timeseries.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/v_component_timeseries.png" alt="v Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_histogram.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_histogram.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/wind_direction_histogram.png" alt="Wind Direction Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_polar.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Polar</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_polar.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/wind_direction_polar.png" alt="Wind Direction Polar" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_timeseries.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_timeseries.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/wind_direction_timeseries.png" alt="Wind Direction Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_rose.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Rose</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_rose.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/wind_rose.png" alt="Wind Rose" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_histogram.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_histogram.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/wind_speed_histogram.png" alt="Wind Speed Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_timeseries.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_timeseries.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/wind_speed_timeseries.png" alt="Wind Speed Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_weibull_fit.png" data-campaign-date="9.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Weibull Fit</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_weibull_fit.png">Compare</button>
+            </div>
+            <img src="9.7.26/figures/wind/wind_speed_weibull_fit.png" alt="Wind Speed Weibull Fit" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="campaign-10-7-26" class="campaign-panel">
+    <nav class="tabs">
+      <button type="button" class="tab-btn" data-target="overview-10-7-26">Overview</button>
+      <button type="button" class="tab-btn" data-target="combined-10-7-26">Combined aerosol</button>
+      <button type="button" class="tab-btn" data-target="scatter-10-7-26">Scatter plots</button>
+      <button type="button" class="tab-btn" data-target="wind-10-7-26">Meteorology</button>
+    </nav>
+    <main>
+      <section id="overview-10-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="10.7.26">
+          <div class="plot-card-header">
+            <h4>Combined PSD — FIDAS, UCASS 1/2/6, TSI</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="10.7.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="Combined PSD — FIDAS, UCASS 1/2/6, TSI" class="figure" loading="lazy"/>
+        </div>
+      </section>
+      <section id="combined-10-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" data-campaign-date="10.7.26">
+          <div class="plot-card-header">
+            <h4>FIDAS vs UCASS vs TSI (dN/dlnDp)</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png">Compare</button>
+          </div>
+          <img src="10.7.26/figures/combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png" alt="FIDAS vs UCASS vs TSI (dN/dlnDp)" class="figure" loading="lazy"/>
+        </div>
+        <h3>By wind speed</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 0 2</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_0_2.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_0_2.png" alt="Wind Speed 0 2" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 10 12</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_10_12.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_10_12.png" alt="Wind Speed 10 12" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 2 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_2_4.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_2_4.png" alt="Wind Speed 2 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 4 6</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_4_6.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_4_6.png" alt="Wind Speed 4 6" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 6 8</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_6_8.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_6_8.png" alt="Wind Speed 6 8" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed 8 10</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_8_10.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_8_10.png" alt="Wind Speed 8 10" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Gt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png" alt="Wind Speed Gt 4" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Lt 4</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png" alt="Wind Speed Lt 4" class="figure" loading="lazy"/>
+          </div>
+        </div>
+        <h3>By wind direction</h3>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction E</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_E.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_E.png" alt="Wind Direction E" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction N</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_N.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_N.png" alt="Wind Direction N" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NE.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NE.png" alt="Wind Direction NE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction NW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_NW.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_NW.png" alt="Wind Direction NW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction S</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_S.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_S.png" alt="Wind Direction S" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SE</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SE.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SE.png" alt="Wind Direction SE" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction SW</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_SW.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_SW.png" alt="Wind Direction SW" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction W</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="combined/wind_direction/mean_dN_dlnDp_WD_W.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/combined/wind_direction/mean_dN_dlnDp_WD_W.png" alt="Wind Direction W" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+      <section id="scatter-10-7-26" class="tab-panel">
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>UCASS multi-bin intercomparison scatter (10 min)</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png" alt="UCASS multi-bin intercomparison scatter (10 min)" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>UCASS multi-bin intercomparison scatter (5 min)</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png" alt="UCASS multi-bin intercomparison scatter (5 min)" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>UCASS multi-bin intercomparison scatter (5 min, wind &lt; 2 m/s)</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png" alt="UCASS multi-bin intercomparison scatter (5 min, wind &lt; 2 m/s)" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+      <section id="wind-10-7-26" class="tab-panel">
+        <div class="plot-card" data-plot-path="map.png" data-campaign-date="10.7.26">
+          <div class="plot-card-header">
+            <h4>Map</h4>
+            <button type="button" class="compare-plot-btn" data-plot-path="map.png">Compare</button>
+          </div>
+          <img src="10.7.26/figures/map.png" alt="Map" class="figure" loading="lazy"/>
+        </div>
+        <div class="grid-2">
+          <div class="plot-card" data-plot-path="wind/air_temperature_timeseries.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Air Temperature Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/air_temperature_timeseries.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/air_temperature_timeseries.png" alt="Air Temperature Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/atmospheric_pressure_timeseries.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Atmospheric Pressure Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/atmospheric_pressure_timeseries.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/atmospheric_pressure_timeseries.png" alt="Atmospheric Pressure Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/correlation_heatmap.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Correlation Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/correlation_heatmap.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/correlation_heatmap.png" alt="Correlation Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Daily Hourly Wind Speed Heatmap</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/daily_hourly_wind_speed_heatmap.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/daily_hourly_wind_speed_heatmap.png" alt="Daily Hourly Wind Speed Heatmap" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_direction.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Direction</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_direction.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/diurnal_wind_direction.png" alt="Diurnal Wind Direction" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/diurnal_wind_speed.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Diurnal Wind Speed</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/diurnal_wind_speed.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/diurnal_wind_speed.png" alt="Diurnal Wind Speed" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/monthly_wind_speed.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Monthly Wind Speed</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/monthly_wind_speed.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/monthly_wind_speed.png" alt="Monthly Wind Speed" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/relative_humidity_timeseries.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Relative Humidity Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/relative_humidity_timeseries.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/relative_humidity_timeseries.png" alt="Relative Humidity Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/u_component_timeseries.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>u Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/u_component_timeseries.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/u_component_timeseries.png" alt="u Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/v_component_timeseries.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>v Component Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/v_component_timeseries.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/v_component_timeseries.png" alt="v Component Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_histogram.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_histogram.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/wind_direction_histogram.png" alt="Wind Direction Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_polar.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Polar</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_polar.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/wind_direction_polar.png" alt="Wind Direction Polar" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_direction_timeseries.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Direction Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_direction_timeseries.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/wind_direction_timeseries.png" alt="Wind Direction Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_rose.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Rose</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_rose.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/wind_rose.png" alt="Wind Rose" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_histogram.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Histogram</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_histogram.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/wind_speed_histogram.png" alt="Wind Speed Histogram" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_timeseries.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Timeseries</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_timeseries.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/wind_speed_timeseries.png" alt="Wind Speed Timeseries" class="figure" loading="lazy"/>
+          </div>
+          <div class="plot-card" data-plot-path="wind/wind_speed_weibull_fit.png" data-campaign-date="10.7.26">
+            <div class="plot-card-header">
+              <h4>Wind Speed Weibull Fit</h4>
+              <button type="button" class="compare-plot-btn" data-plot-path="wind/wind_speed_weibull_fit.png">Compare</button>
+            </div>
+            <img src="10.7.26/figures/wind/wind_speed_weibull_fit.png" alt="Wind Speed Weibull Fit" class="figure" loading="lazy"/>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div id="compare-panel" class="compare-panel">
+    <div class="compare-controls">
+      <div class="compare-controls-row">
+        <div>
+          <h2>Comparison</h2>
+          <p style="margin:0.35rem 0 0; font-size:0.88rem; color:#57606a;">Selected plots from different dates. Add more with Compare, or clear all.</p>
+        </div>
+        <button type="button" id="compare-page-clear" class="compare-clear-btn">Clear all</button>
+      </div>
+    </div>
+    <div id="compare-grid" class="compare-grid"></div>
+    <p id="compare-empty" class="compare-empty" style="display:none;">No plots selected. Use Compare on any plot to start.</p>
+  </div>
+  <div id="plot-lightbox" class="plot-lightbox" aria-hidden="true">
+    <button type="button" class="lightbox-close" aria-label="Close">&times;</button>
+    <img src="" alt=""/>
+    <p class="lightbox-caption"></p>
+  </div>
+  <script>window.PLOT_CATALOG = {campaigns: ["23.6.26", "2.7.26", "9.7.26", "10.7.26"], plots: {"combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png": "Combined FIDAS UCASS TSI dN/dlnDp", "combined/wind_direction/mean_dN_dlnDp_WD_E.png": "Wind Direction E", "combined/wind_direction/mean_dN_dlnDp_WD_N.png": "Wind Direction N", "combined/wind_direction/mean_dN_dlnDp_WD_NE.png": "Wind Direction NE", "combined/wind_direction/mean_dN_dlnDp_WD_NW.png": "Wind Direction NW", "combined/wind_direction/mean_dN_dlnDp_WD_S.png": "Wind Direction S", "combined/wind_direction/mean_dN_dlnDp_WD_SE.png": "Wind Direction SE", "combined/wind_direction/mean_dN_dlnDp_WD_SW.png": "Wind Direction SW", "combined/wind_direction/mean_dN_dlnDp_WD_W.png": "Wind Direction W", "combined/wind_speed/mean_dN_dlnDp_WS_0_2.png": "Wind Speed 0 2", "combined/wind_speed/mean_dN_dlnDp_WS_10_12.png": "Wind Speed 10 12", "combined/wind_speed/mean_dN_dlnDp_WS_2_4.png": "Wind Speed 2 4", "combined/wind_speed/mean_dN_dlnDp_WS_4_6.png": "Wind Speed 4 6", "combined/wind_speed/mean_dN_dlnDp_WS_6_8.png": "Wind Speed 6 8", "combined/wind_speed/mean_dN_dlnDp_WS_8_10.png": "Wind Speed 8 10", "combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png": "Wind Speed Gt 4", "combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png": "Wind Speed Lt 4", "map.png": "Map", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png": "UCASS multi-bin intercomparison scatter (10 min)", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png": "UCASS multi-bin intercomparison scatter (5 min)", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png": "UCASS multi-bin intercomparison scatter (5 min, wind < 2 m/s)", "wind/air_temperature_timeseries.png": "Air Temperature Timeseries", "wind/atmospheric_pressure_timeseries.png": "Atmospheric Pressure Timeseries", "wind/correlation_heatmap.png": "Correlation Heatmap", "wind/daily_hourly_wind_speed_heatmap.png": "Daily Hourly Wind Speed Heatmap", "wind/diurnal_wind_direction.png": "Diurnal Wind Direction", "wind/diurnal_wind_speed.png": "Diurnal Wind Speed", "wind/relative_humidity_timeseries.png": "Relative Humidity Timeseries", "wind/u_component_timeseries.png": "u Component Timeseries", "wind/v_component_timeseries.png": "v Component Timeseries", "wind/wind_direction_histogram.png": "Wind Direction Histogram", "wind/wind_direction_polar.png": "Wind Direction Polar", "wind/wind_direction_timeseries.png": "Wind Direction Timeseries", "wind/wind_rose.png": "Wind Rose", "wind/wind_speed_histogram.png": "Wind Speed Histogram", "wind/wind_speed_timeseries.png": "Wind Speed Timeseries", "wind/wind_speed_weibull_fit.png": "Wind Speed Weibull Fit", "wind/monthly_wind_speed.png": "Monthly Wind Speed"}, availability: {"23.6.26": ["combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png", "combined/wind_direction/mean_dN_dlnDp_WD_E.png", "combined/wind_direction/mean_dN_dlnDp_WD_N.png", "combined/wind_direction/mean_dN_dlnDp_WD_NE.png", "combined/wind_direction/mean_dN_dlnDp_WD_NW.png", "combined/wind_direction/mean_dN_dlnDp_WD_S.png", "combined/wind_direction/mean_dN_dlnDp_WD_SE.png", "combined/wind_direction/mean_dN_dlnDp_WD_SW.png", "combined/wind_direction/mean_dN_dlnDp_WD_W.png", "combined/wind_speed/mean_dN_dlnDp_WS_0_2.png", "combined/wind_speed/mean_dN_dlnDp_WS_10_12.png", "combined/wind_speed/mean_dN_dlnDp_WS_2_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_4_6.png", "combined/wind_speed/mean_dN_dlnDp_WS_6_8.png", "combined/wind_speed/mean_dN_dlnDp_WS_8_10.png", "combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png", "map.png", "wind/air_temperature_timeseries.png", "wind/atmospheric_pressure_timeseries.png", "wind/correlation_heatmap.png", "wind/daily_hourly_wind_speed_heatmap.png", "wind/diurnal_wind_direction.png", "wind/diurnal_wind_speed.png", "wind/relative_humidity_timeseries.png", "wind/u_component_timeseries.png", "wind/v_component_timeseries.png", "wind/wind_direction_histogram.png", "wind/wind_direction_polar.png", "wind/wind_direction_timeseries.png", "wind/wind_rose.png", "wind/wind_speed_histogram.png", "wind/wind_speed_timeseries.png", "wind/wind_speed_weibull_fit.png"], "2.7.26": ["combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png", "combined/wind_direction/mean_dN_dlnDp_WD_E.png", "combined/wind_direction/mean_dN_dlnDp_WD_N.png", "combined/wind_direction/mean_dN_dlnDp_WD_NE.png", "combined/wind_direction/mean_dN_dlnDp_WD_NW.png", "combined/wind_direction/mean_dN_dlnDp_WD_S.png", "combined/wind_direction/mean_dN_dlnDp_WD_SE.png", "combined/wind_direction/mean_dN_dlnDp_WD_SW.png", "combined/wind_direction/mean_dN_dlnDp_WD_W.png", "combined/wind_speed/mean_dN_dlnDp_WS_0_2.png", "combined/wind_speed/mean_dN_dlnDp_WS_10_12.png", "combined/wind_speed/mean_dN_dlnDp_WS_2_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_4_6.png", "combined/wind_speed/mean_dN_dlnDp_WS_6_8.png", "combined/wind_speed/mean_dN_dlnDp_WS_8_10.png", "combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png", "map.png", "wind/air_temperature_timeseries.png", "wind/atmospheric_pressure_timeseries.png", "wind/correlation_heatmap.png", "wind/daily_hourly_wind_speed_heatmap.png", "wind/diurnal_wind_direction.png", "wind/diurnal_wind_speed.png", "wind/relative_humidity_timeseries.png", "wind/u_component_timeseries.png", "wind/v_component_timeseries.png", "wind/wind_direction_histogram.png", "wind/wind_direction_polar.png", "wind/wind_direction_timeseries.png", "wind/wind_rose.png", "wind/wind_speed_histogram.png", "wind/wind_speed_timeseries.png", "wind/wind_speed_weibull_fit.png"], "9.7.26": ["combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png", "combined/wind_direction/mean_dN_dlnDp_WD_E.png", "combined/wind_direction/mean_dN_dlnDp_WD_N.png", "combined/wind_direction/mean_dN_dlnDp_WD_NE.png", "combined/wind_direction/mean_dN_dlnDp_WD_NW.png", "combined/wind_direction/mean_dN_dlnDp_WD_S.png", "combined/wind_direction/mean_dN_dlnDp_WD_SE.png", "combined/wind_direction/mean_dN_dlnDp_WD_SW.png", "combined/wind_direction/mean_dN_dlnDp_WD_W.png", "combined/wind_speed/mean_dN_dlnDp_WS_0_2.png", "combined/wind_speed/mean_dN_dlnDp_WS_10_12.png", "combined/wind_speed/mean_dN_dlnDp_WS_2_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_4_6.png", "combined/wind_speed/mean_dN_dlnDp_WS_6_8.png", "combined/wind_speed/mean_dN_dlnDp_WS_8_10.png", "combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png", "wind/air_temperature_timeseries.png", "wind/atmospheric_pressure_timeseries.png", "wind/correlation_heatmap.png", "wind/daily_hourly_wind_speed_heatmap.png", "wind/diurnal_wind_direction.png", "wind/diurnal_wind_speed.png", "wind/monthly_wind_speed.png", "wind/relative_humidity_timeseries.png", "wind/u_component_timeseries.png", "wind/v_component_timeseries.png", "wind/wind_direction_histogram.png", "wind/wind_direction_polar.png", "wind/wind_direction_timeseries.png", "wind/wind_rose.png", "wind/wind_speed_histogram.png", "wind/wind_speed_timeseries.png", "wind/wind_speed_weibull_fit.png"], "10.7.26": ["combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png", "combined/wind_direction/mean_dN_dlnDp_WD_E.png", "combined/wind_direction/mean_dN_dlnDp_WD_N.png", "combined/wind_direction/mean_dN_dlnDp_WD_NE.png", "combined/wind_direction/mean_dN_dlnDp_WD_NW.png", "combined/wind_direction/mean_dN_dlnDp_WD_S.png", "combined/wind_direction/mean_dN_dlnDp_WD_SE.png", "combined/wind_direction/mean_dN_dlnDp_WD_SW.png", "combined/wind_direction/mean_dN_dlnDp_WD_W.png", "combined/wind_speed/mean_dN_dlnDp_WS_0_2.png", "combined/wind_speed/mean_dN_dlnDp_WS_10_12.png", "combined/wind_speed/mean_dN_dlnDp_WS_2_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_4_6.png", "combined/wind_speed/mean_dN_dlnDp_WS_6_8.png", "combined/wind_speed/mean_dN_dlnDp_WS_8_10.png", "combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png", "combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png", "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min_by_wind_2ms.png", "map.png", "wind/air_temperature_timeseries.png", "wind/atmospheric_pressure_timeseries.png", "wind/correlation_heatmap.png", "wind/daily_hourly_wind_speed_heatmap.png", "wind/diurnal_wind_direction.png", "wind/diurnal_wind_speed.png", "wind/monthly_wind_speed.png", "wind/relative_humidity_timeseries.png", "wind/u_component_timeseries.png", "wind/v_component_timeseries.png", "wind/wind_direction_histogram.png", "wind/wind_direction_polar.png", "wind/wind_direction_timeseries.png", "wind/wind_rose.png", "wind/wind_speed_histogram.png", "wind/wind_speed_timeseries.png", "wind/wind_speed_weibull_fit.png"]}};</script>
+  <script>
+var plotCatalog = window.PLOT_CATALOG || { campaigns: [], plots: {}, availability: {} };
+var compareQueue = [];
+var lastDateSlug = null;
+
+function updateComparisonTab() {
+  var tab = document.getElementById('comparison-tab');
+  if (!tab) return;
+  tab.classList.toggle('has-items', compareQueue.length > 0);
+  tab.textContent = compareQueue.length
+    ? 'Comparison (' + compareQueue.length + ')'
+    : 'Comparison';
+}
+
+function activateView(slug) {
+  var isCompare = slug === 'compare';
+  if (!isCompare) lastDateSlug = slug;
+
+  document.querySelectorAll('.campaign-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-slug') === slug);
+  });
+  document.querySelectorAll('.campaign-panel').forEach(function(p) {
+    p.classList.toggle('active', !isCompare && p.id === 'campaign-' + slug);
+  });
+
+  var comparePanel = document.getElementById('compare-panel');
+  if (comparePanel) comparePanel.classList.toggle('active', isCompare);
+  if (isCompare) renderComparisonFromQueue();
+  syncQueuedCards();
+}
+
+function activateCampaign(slug) {
+  activateView(slug);
+}
+
+document.querySelectorAll('.campaign-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    activateView(btn.getAttribute('data-slug'));
+  });
+});
+document.querySelectorAll('.campaign-panel').forEach(function(panel) {
+  var tabs = panel.querySelectorAll('.tab-btn');
+  var panels = panel.querySelectorAll('.tab-panel');
+  tabs.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = btn.getAttribute('data-target');
+      tabs.forEach(function(b) { b.classList.remove('active'); });
+      panels.forEach(function(p) { p.classList.remove('active'); });
+      btn.classList.add('active');
+      var el = panel.querySelector('#' + id);
+      if (el) el.classList.add('active');
+    });
+  });
+  if (tabs.length) tabs[0].classList.add('active');
+  if (panels.length) panels[0].classList.add('active');
+});
+var firstCampaign = document.querySelector('.campaign-btn:not(.comparison-tab)');
+if (firstCampaign) {
+  lastDateSlug = firstCampaign.getAttribute('data-slug');
+  activateView(lastDateSlug);
+}
+
+var lightbox = document.getElementById('plot-lightbox');
+var lightboxImg = lightbox ? lightbox.querySelector('img') : null;
+var lightboxCaption = lightbox ? lightbox.querySelector('.lightbox-caption') : null;
+
+function openLightbox(src, caption) {
+  if (!lightbox || !lightboxImg) return;
+  lightboxImg.src = src;
+  lightboxImg.alt = caption;
+  if (lightboxCaption) lightboxCaption.textContent = caption;
+  lightbox.classList.add('active');
+  document.body.classList.add('lightbox-open');
+}
+
+function closeLightbox() {
+  if (!lightbox || !lightboxImg) return;
+  lightbox.classList.remove('active');
+  lightboxImg.removeAttribute('src');
+  document.body.classList.remove('lightbox-open');
+}
+
+document.addEventListener('click', function(e) {
+  var img = e.target.closest('.figure');
+  if (!img || e.target.closest('.compare-remove-btn')) return;
+  if (img.closest('.plot-card') || img.closest('.compare-card')) {
+    e.stopPropagation();
+    openLightbox(img.src, img.alt || '');
+  }
+});
+
+if (lightbox) {
+  var lightboxClose = lightbox.querySelector('.lightbox-close');
+  if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function(e) {
+    if (e.target === lightbox) closeLightbox();
+  });
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+function queueKey(item) {
+  return item.plotPath + '::' + item.dateLabel;
+}
+
+function syncQueuedCards() {
+  if (!compareQueue) compareQueue = [];
+  document.querySelectorAll('.plot-card').forEach(function(card) {
+    var path = card.getAttribute('data-plot-path');
+    var date = card.getAttribute('data-campaign-date');
+    var btn = card.querySelector('.compare-plot-btn');
+    var inQueue = compareQueue.some(function(item) {
+      return item.plotPath === path && item.dateLabel === date;
+    });
+    card.classList.toggle('compare-queued', inQueue);
+    if (btn) btn.classList.toggle('queued', inQueue);
+  });
+}
+
+function closeCompareView() {
+  if (lastDateSlug) {
+    activateView(lastDateSlug);
+  } else {
+    var first = document.querySelector('.campaign-btn:not(.comparison-tab)');
+    if (first) activateView(first.getAttribute('data-slug'));
+  }
+}
+
+function updateCompareBar() {
+  updateComparisonTab();
+}
+
+function removeFromCompareQueue(plotPath, dateLabel) {
+  var key = plotPath + '::' + dateLabel;
+  compareQueue = compareQueue.filter(function(item) {
+    return queueKey(item) !== key;
+  });
+  syncQueuedCards();
+  updateCompareBar();
+  if (compareQueue.length > 0) {
+    openCompareFromQueue();
+  } else {
+    closeCompareView();
+  }
+}
+
+function toggleCompareQueue(plotPath, dateLabel) {
+  var key = plotPath + '::' + dateLabel;
+  var idx = compareQueue.findIndex(function(item) {
+    return queueKey(item) === key;
+  });
+  if (idx >= 0) {
+    compareQueue.splice(idx, 1);
+  } else {
+    compareQueue.push({ plotPath: plotPath, dateLabel: dateLabel });
+  }
+  syncQueuedCards();
+  updateCompareBar();
+  if (compareQueue.length > 0) {
+    openCompareFromQueue();
+  } else {
+    closeCompareView();
+  }
+}
+
+function clearCompareQueue() {
+  compareQueue = [];
+  syncQueuedCards();
+  updateCompareBar();
+  closeCompareView();
+}
+
+function renderComparisonFromQueue() {
+  var container = document.getElementById('compare-grid');
+  var empty = document.getElementById('compare-empty');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!compareQueue.length) {
+    if (empty) {
+      empty.style.display = 'block';
+      empty.textContent = 'No plots selected. Use Compare on any plot to start.';
+    }
+    return;
+  }
+
+  compareQueue.forEach(function(item) {
+    var relPath = item.plotPath;
+    var label = item.dateLabel;
+    var title = plotCatalog.plots[relPath] || relPath;
+    var src = label + '/figures/' + relPath;
+    var card = document.createElement('div');
+    card.className = 'compare-card';
+    card.innerHTML =
+      '<button type="button" class="compare-remove-btn" data-plot-path="' + relPath +
+      '" data-campaign-date="' + label + '">Remove</button>' +
+      '<span class="date-badge">' + label + '</span>' +
+      '<h4>' + title + '</h4>' +
+      '<img src="' + src + '" alt="' + label + ' — ' + title + '" class="figure" loading="lazy"/>';
+    container.appendChild(card);
+  });
+
+  if (empty) empty.style.display = 'none';
+
+  container.querySelectorAll('.compare-remove-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      removeFromCompareQueue(
+        btn.getAttribute('data-plot-path'),
+        btn.getAttribute('data-campaign-date')
+      );
+    });
+  });
+
+  container.querySelectorAll('.figure').forEach(function(img) {
+    img.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openLightbox(img.src, img.alt || '');
+    });
+  });
+}
+
+function openCompareFromQueue() {
+  activateView('compare');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+updateComparisonTab();
+
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest('.compare-plot-btn');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  var card = btn.closest('.plot-card');
+  if (!card) return;
+  toggleCompareQueue(
+    btn.getAttribute('data-plot-path'),
+    card.getAttribute('data-campaign-date')
+  );
+});
+
+var comparePageClear = document.getElementById('compare-page-clear');
+if (comparePageClear) comparePageClear.addEventListener('click', clearCompareQueue);
+updateComparisonTab();
+</script>
+</body>
+</html>
