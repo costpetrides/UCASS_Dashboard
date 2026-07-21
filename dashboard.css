@@ -1,0 +1,87 @@
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0; background: #f0f2f5; color: #1f2328; line-height: 1.45; }
+header { background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+  color: #fff; padding: 1.1rem 1.5rem 1rem; }
+header h1 { margin: 0 0 0.35rem; font-size: 1.4rem; font-weight: 600; }
+header .subtitle { margin: 0; font-size: 0.82rem; opacity: 0.92; }
+nav.campaign-nav { display: flex; flex-wrap: wrap; gap: 0.45rem; padding: 0.65rem 1rem;
+  background: #e8eef4; border-bottom: 2px solid #c8d4e0; position: sticky; top: 0; z-index: 110; }
+nav.campaign-nav .label { align-self: center; font-size: 0.8rem; font-weight: 600;
+  color: #424a53; margin-right: 0.5rem; }
+.campaign-btn { border: 1px solid #b8c4d0; background: #fff; padding: 0.5rem 1rem;
+  border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: 500; }
+.campaign-btn:hover { background: #f0f6fc; }
+.campaign-btn.active { background: #1e3a5f; color: #fff; border-color: #1e3a5f; }
+.campaign-panel { display: none; }
+.campaign-panel.active { display: block; }
+nav.tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.7rem 1rem;
+  background: #fff; border-bottom: 1px solid #d8dee4; }
+.tab-btn { border: 1px solid #d0d7de; background: #f6f8fa; padding: 0.45rem 0.9rem;
+  border-radius: 6px; cursor: pointer; font-size: 0.88rem; }
+.tab-btn.active { background: #0969da; color: #fff; border-color: #0969da; }
+main { padding: 1.25rem 1.5rem 3rem; max-width: 1280px; margin: 0 auto; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.tab-panel h3 { color: #1e3a5f; }
+.plot-card { background: #fff; border: 2px solid #d8dee4; border-radius: 8px;
+  padding: 0.75rem; margin-bottom: 1rem; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
+.plot-card:hover { border-color: #b8c4d0; }
+.plot-card.compare-queued { border-color: #cf222e; box-shadow: 0 0 0 1px #cf222e; }
+.plot-card-header { display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; margin-bottom: 0.5rem; }
+.plot-card h4 { margin: 0; font-size: 0.85rem; color: #57606a; }
+.compare-plot-btn { border: 1px solid #cf222e; background: #fff; color: #cf222e;
+  padding: 0.25rem 0.65rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;
+  font-weight: 600; flex-shrink: 0; }
+.compare-plot-btn:hover { background: #ffebe9; }
+.compare-plot-btn.queued { background: #cf222e; color: #fff; border-color: #cf222e; }
+.campaign-btn.comparison-tab { border-color: #cf222e; color: #cf222e; margin-left: 0.25rem; }
+.campaign-btn.comparison-tab:hover { background: #ffebe9; }
+.campaign-btn.comparison-tab.active { background: #cf222e; color: #fff; border-color: #cf222e; }
+.campaign-btn.comparison-tab.has-items { font-weight: 600; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 960px) { .grid-2 { grid-template-columns: 1fr; } }
+.plot-lightbox { display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15, 23, 42, 0.94); padding: 1.5rem;
+  flex-direction: column; align-items: center; justify-content: center; }
+.plot-lightbox.active { display: flex; }
+.plot-lightbox img { max-width: min(96vw, 1600px); max-height: 82vh; width: auto; height: auto;
+  object-fit: contain; background: #fff; border-radius: 6px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+.plot-lightbox .lightbox-caption { color: #e6edf3; font-size: 0.9rem; margin: 0.75rem 0 0;
+  text-align: center; max-width: 90vw; }
+.lightbox-close { position: fixed; top: 1rem; right: 1rem; border: none; background: rgba(255,255,255,0.15);
+  color: #fff; font-size: 2rem; line-height: 1; width: 2.5rem; height: 2.5rem; border-radius: 8px;
+  cursor: pointer; }
+.lightbox-close:hover { background: rgba(255,255,255,0.28); }
+body.lightbox-open { overflow: hidden; }
+.compare-panel { display: none; }
+.compare-panel.active { display: block; }
+.compare-controls { background: #fff; border: 1px solid #d8dee4; border-radius: 8px;
+  padding: 1rem 1.25rem; margin: 1.25rem 1.5rem 0; max-width: 1280px; }
+.compare-controls h2 { margin: 0 0 0.75rem; font-size: 1.05rem; color: #1e3a5f; }
+.compare-row { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: flex-end; }
+.compare-field { display: flex; flex-direction: column; gap: 0.35rem; min-width: 220px; }
+.compare-field label { font-size: 0.8rem; font-weight: 600; color: #424a53; }
+.compare-field select { padding: 0.45rem 0.6rem; border: 1px solid #d0d7de; border-radius: 6px;
+  font-size: 0.9rem; background: #fff; }
+.date-checks { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; }
+.date-check { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.88rem; }
+.compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem; padding: 1.25rem 1.5rem 3rem; max-width: 1280px; margin: 0 auto; }
+.compare-card { background: #fff; border: 1px solid #d8dee4; border-radius: 8px; padding: 0.75rem; }
+.compare-card h4 { margin: 0 0 0.5rem; font-size: 0.85rem; color: #1e3a5f; }
+.compare-card .date-badge { display: inline-block; background: #e8eef4; color: #1e3a5f;
+  font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.45rem; border-radius: 4px;
+  margin-bottom: 0.45rem; }
+.compare-empty { color: #57606a; font-size: 0.9rem; padding: 1.25rem 1.5rem 3rem; max-width: 1280px;
+  margin: 0 auto; }
+.compare-remove-btn { border: none; background: #ffebe9; color: #cf222e; padding: 0.2rem 0.5rem;
+  border-radius: 4px; cursor: pointer; font-size: 0.72rem; font-weight: 600; margin-bottom: 0.45rem; }
+.compare-remove-btn:hover { background: #cf222e; color: #fff; }
+.compare-controls-row { display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; flex-wrap: wrap; }
+.compare-clear-btn { border: 1px solid #cf222e; background: #fff; color: #cf222e;
+  padding: 0.4rem 0.85rem; border-radius: 6px; cursor: pointer; font-size: 0.82rem; font-weight: 600; }
+.compare-clear-btn:hover { background: #cf222e; color: #fff; }
+.figure { width: 100%; max-width: 100%; height: auto; display: block; cursor: zoom-in; }

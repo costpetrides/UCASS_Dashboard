@@ -12,6 +12,22 @@ ROOT = Path(__file__).resolve().parent
 
 PLOT_TITLES = {
     "combined/combined_FIDAS_UCASS_TSI_dN_dlnDp.png": "Combined FIDAS UCASS TSI dN/dlnDp",
+    "combined/wind_direction/mean_dN_dlnDp_WD_E.png": "Wind Direction E",
+    "combined/wind_direction/mean_dN_dlnDp_WD_N.png": "Wind Direction N",
+    "combined/wind_direction/mean_dN_dlnDp_WD_NE.png": "Wind Direction NE",
+    "combined/wind_direction/mean_dN_dlnDp_WD_NW.png": "Wind Direction NW",
+    "combined/wind_direction/mean_dN_dlnDp_WD_S.png": "Wind Direction S",
+    "combined/wind_direction/mean_dN_dlnDp_WD_SE.png": "Wind Direction SE",
+    "combined/wind_direction/mean_dN_dlnDp_WD_SW.png": "Wind Direction SW",
+    "combined/wind_direction/mean_dN_dlnDp_WD_W.png": "Wind Direction W",
+    "combined/wind_speed/mean_dN_dlnDp_WS_0_2.png": "Wind Speed 0 2",
+    "combined/wind_speed/mean_dN_dlnDp_WS_10_12.png": "Wind Speed 10 12",
+    "combined/wind_speed/mean_dN_dlnDp_WS_2_4.png": "Wind Speed 2 4",
+    "combined/wind_speed/mean_dN_dlnDp_WS_4_6.png": "Wind Speed 4 6",
+    "combined/wind_speed/mean_dN_dlnDp_WS_6_8.png": "Wind Speed 6 8",
+    "combined/wind_speed/mean_dN_dlnDp_WS_8_10.png": "Wind Speed 8 10",
+    "combined/wind_speed/mean_dN_dlnDp_WS_gt_4.png": "Wind Speed Gt 4",
+    "combined/wind_speed/mean_dN_dlnDp_WS_lt_4.png": "Wind Speed Lt 4",
     "map.png": "Map",
     "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_10min.png": "UCASS multi-bin intercomparison scatter (10 min)",
     "ScatterPlots/UCASS_multi_bin_intercomparison_scatter_5min.png": "UCASS multi-bin intercomparison scatter (5 min)",
@@ -87,9 +103,8 @@ WIND_ORDER = [
     "wind_speed_weibull_fit.png",
 ]
 
-CSS = Path(ROOT / "index.html").read_text(encoding="utf-8").split("<style>", 1)[1].split("</style>", 1)[0]
-JS = Path(ROOT / "index.html").read_text(encoding="utf-8").split("<script>\nvar plotCatalog", 1)[1]
-JS = "var plotCatalog" + JS.rsplit("</script>", 1)[0]
+CSS = (ROOT / "dashboard.css").read_text(encoding="utf-8")
+JS = (ROOT / "dashboard.js").read_text(encoding="utf-8")
 
 
 def date_key(label: str) -> tuple[int, int, int]:
