@@ -35,7 +35,6 @@ function activateTabForPanel(panel, kind) {
   var id = matched.getAttribute('data-target');
   var el = panel.querySelector('#' + id);
   if (el) el.classList.add('active');
-  lastTabKind = tabKindFromTarget(id);
 }
 
 function updateComparisonTab() {
