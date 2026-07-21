@@ -106,13 +106,37 @@ WIND_ORDER = [
 CSS = (ROOT / "dashboard.css").read_text(encoding="utf-8")
 JS = (ROOT / "dashboard.js").read_text(encoding="utf-8")
 
+DATE_RE = re.compile(r"^\d{1,2}\.\d{1,2}\.\d{2}$")
+ALL_DISPLAY = "All Measurement Days"
+
+
+def is_all_campaign(label: str) -> bool:
+    # Latin "All" or Greek Alpha + "ll" (folder name Αll)
+    normalized = label.replace("Α", "A").replace("α", "a")
+    return normalized.lower() == "all"
+
+
+def display_name(label: str) -> str:
+    return ALL_DISPLAY if is_all_campaign(label) else label
+
 
 def date_key(label: str) -> tuple[int, int, int]:
     day, month, year = label.split(".")
     return (2000 + int(year), int(month), int(day))
 
 
+def campaign_sort_key(label: str) -> tuple:
+    if is_all_campaign(label):
+        return (1, 9999, 99, 99, label)
+    if DATE_RE.match(label):
+        y, m, d = date_key(label)
+        return (0, y, m, d, label)
+    return (2, 0, 0, 0, label)
+
+
 def slug_from_label(label: str) -> str:
+    if is_all_campaign(label):
+        return "all"
     return label.replace(".", "-")
 
 
@@ -135,11 +159,34 @@ def discover_campaigns() -> list[str]:
             continue
         if (entry / "figures").is_dir():
             campaigns.append(entry.name)
-    campaigns.sort(key=date_key)
+    campaigns.sort(key=campaign_sort_key)
     return campaigns
 
 
+def normalize_all_scatter_layout(campaign: str) -> None:
+    """If ScatterPlots sit next to figures/, move them under figures/ScatterPlots."""
+    campaign_dir = ROOT / campaign
+    top_scatter = campaign_dir / "ScatterPlots"
+    figures_scatter = campaign_dir / "figures" / "ScatterPlots"
+    if not top_scatter.is_dir():
+        return
+    figures_scatter.mkdir(parents=True, exist_ok=True)
+    for png in top_scatter.glob("*.png"):
+        dest = figures_scatter / png.name
+        if not dest.exists():
+            png.rename(dest)
+        else:
+            png.unlink()
+    # Remove empty leftover dir if possible
+    try:
+        if top_scatter.exists() and not any(top_scatter.iterdir()):
+            top_scatter.rmdir()
+    except OSError:
+        pass
+
+
 def scan_plots(campaign: str) -> list[str]:
+    normalize_all_scatter_layout(campaign)
     figures_dir = ROOT / campaign / "figures"
     plots: list[str] = []
     for png in figures_dir.rglob("*.png"):
@@ -277,6 +324,7 @@ def build_plot_catalog(campaigns: dict[str, list[str]]) -> str:
 
     catalog = {
         "campaigns": list(campaigns.keys()),
+        "labels": {c: display_name(c) for c in campaigns.keys()},
         "plots": all_plots,
         "availability": campaigns,
     }
@@ -288,7 +336,7 @@ def build_html() -> str:
     campaigns: dict[str, list[str]] = {c: scan_plots(c) for c in campaigns_list}
 
     nav_buttons = "\n".join(
-        f'    <button type="button" class="campaign-btn" data-slug="{slug_from_label(c)}">{html.escape(c)}</button>'
+        f'    <button type="button" class="campaign-btn" data-slug="{slug_from_label(c)}">{html.escape(display_name(c))}</button>'
         for c in campaigns_list
     )
 
@@ -349,7 +397,8 @@ def main() -> None:
     output = ROOT / "index.html"
     output.write_text(build_html(), encoding="utf-8")
     campaigns = discover_campaigns()
-    print(f"Built {output.name} with {len(campaigns)} date(s): {', '.join(campaigns)}")
+    shown = ", ".join(display_name(c) for c in campaigns)
+    print(f"Built {output.name} with {len(campaigns)} campaign(s): {shown}")
 
 
 if __name__ == "__main__":

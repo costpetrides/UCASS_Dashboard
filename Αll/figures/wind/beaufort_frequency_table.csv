@@ -1,0 +1,14 @@
+beaufort_force,description,speed_lower_ms,speed_upper_ms,count,frequency_pct
+0,Calm,0.0,0.3,11137,2.6424244724997568
+1,Light air,0.3,1.6,119510,28.35558487101068
+2,Light breeze,1.6,3.4,118538,28.12496292728528
+3,Gentle breeze,3.4,5.5,113799,27.00056231893686
+4,Moderate breeze,5.5,8.0,52923,12.556795398949863
+5,Fresh breeze,8.0,10.8,5488,1.30211237362653
+6,Strong breeze,10.8,13.9,74,0.017557637691028284
+7,Near gale,13.9,17.2,0,0.0
+8,Gale,17.2,20.8,0,0.0
+9,Strong gale,20.8,24.5,0,0.0
+10,Storm,24.5,28.5,0,0.0
+11,Violent storm,28.5,32.7,0,0.0
+12,Hurricane,32.7,,0,0.0

@@ -1,8 +1,15 @@
-var plotCatalog = window.PLOT_CATALOG || { campaigns: [], plots: {}, availability: {} };
+var plotCatalog = window.PLOT_CATALOG || { campaigns: [], labels: {}, plots: {}, availability: {} };
 var compareQueue = [];
 var lastDateSlug = null;
 var lastTabKind = 'overview';
 var TAB_KINDS = ['overview', 'combined', 'scatter', 'wind'];
+
+function campaignLabel(folderName) {
+  if (plotCatalog.labels && plotCatalog.labels[folderName]) {
+    return plotCatalog.labels[folderName];
+  }
+  return folderName;
+}
 
 function tabKindFromTarget(target) {
   if (!target) return 'overview';
@@ -227,15 +234,16 @@ function renderComparisonFromQueue() {
     var relPath = item.plotPath;
     var label = item.dateLabel;
     var title = plotCatalog.plots[relPath] || relPath;
+    var badge = campaignLabel(label);
     var src = label + '/figures/' + relPath;
     var card = document.createElement('div');
     card.className = 'compare-card';
     card.innerHTML =
       '<button type="button" class="compare-remove-btn" data-plot-path="' + relPath +
       '" data-campaign-date="' + label + '">Remove</button>' +
-      '<span class="date-badge">' + label + '</span>' +
+      '<span class="date-badge">' + badge + '</span>' +
       '<h4>' + title + '</h4>' +
-      '<img src="' + src + '" alt="' + label + ' — ' + title + '" class="figure" loading="lazy"/>';
+      '<img src="' + src + '" alt="' + badge + ' — ' + title + '" class="figure" loading="lazy"/>';
     container.appendChild(card);
   });
 
