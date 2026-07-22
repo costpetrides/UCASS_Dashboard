@@ -235,7 +235,9 @@ def build_campaign_panel(campaign: str, plots: list[str]) -> str:
     wind_plots = ordered_subset(plot_set, "wind/", WIND_ORDER)
 
     has_combined = has_combined_psd or wind_speed or wind_direction
-    has_wind = has_map or wind_plots
+    # All Measurement Days: show aerosol/scatter only, no meteorology tab
+    show_meteorology = not is_all_campaign(campaign)
+    has_wind = show_meteorology and (has_map or wind_plots)
 
     tabs: list[tuple[str, str]] = []
     if has_combined_psd:
