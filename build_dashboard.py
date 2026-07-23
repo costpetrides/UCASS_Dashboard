@@ -383,6 +383,8 @@ def build_html() -> str:
   </div>
   <div id="plot-lightbox" class="plot-lightbox" aria-hidden="true">
     <button type="button" class="lightbox-close" aria-label="Close">&times;</button>
+    <button type="button" class="lightbox-nav lightbox-prev" aria-label="Previous image" hidden>&lsaquo;</button>
+    <button type="button" class="lightbox-nav lightbox-next" aria-label="Next image" hidden>&rsaquo;</button>
     <img src="" alt=""/>
     <p class="lightbox-caption"></p>
   </div>
