@@ -54,10 +54,12 @@ main { padding: 1.25rem 1.5rem 3rem; max-width: 1280px; margin: 0 auto; }
   color: #fff; font-size: 2rem; line-height: 1; width: 2.5rem; height: 2.5rem; border-radius: 8px;
   cursor: pointer; z-index: 1001; }
 .lightbox-close:hover { background: rgba(255,255,255,0.28); }
-.lightbox-nav { position: fixed; top: 50%; transform: translateY(-50%); border: none;
-  background: rgba(255,255,255,0.15); color: #fff; font-size: 2.25rem; line-height: 1;
-  width: 2.75rem; height: 2.75rem; border-radius: 8px; cursor: pointer; z-index: 1001; }
-.lightbox-nav:hover { background: rgba(255,255,255,0.28); }
+.lightbox-nav { position: fixed; top: 50%; transform: translateY(-50%); border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(15, 23, 42, 0.75); color: #fff; font-size: 2.5rem; line-height: 1;
+  width: 3.25rem; height: 3.25rem; border-radius: 999px; cursor: pointer; z-index: 1001;
+  display: flex; align-items: center; justify-content: center; }
+.lightbox-nav:hover:not(:disabled) { background: rgba(15, 23, 42, 0.95); }
+.lightbox-nav:disabled { opacity: 0.35; cursor: default; }
 .lightbox-prev { left: 1rem; }
 .lightbox-next { right: 1rem; }
 .lightbox-nav[hidden] { display: none; }
